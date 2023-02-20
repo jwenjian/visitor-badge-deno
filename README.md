@@ -1,6 +1,6 @@
 # visitor-badge-deno
 
-Just like [jwenjian/visitor-badge], but only provides `.json` file.
+Just like [visitor-badge](https://github.com/jwenjian/visitor-badge), but only provides `.json` file.
 
 Deployed under my free Deno account, 100k req/day, 1000 req/min.
 
