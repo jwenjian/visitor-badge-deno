@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.155.0/http/server.ts";
 import { createHash } from "https://deno.land/std@0.155.0/hash/mod.ts";
-import { connect } from "https://denopkg.com/keroxp/deno-redis/mod.ts";
 import "https://unpkg.com/badgen";
 
 serve(async (req: Request) => {
@@ -34,29 +33,32 @@ function checksumOfUrl(url: String) {
 }
 
 /**
- * "/page.id.json" -> "page.id"
+ * "/page.id.svg" -> "page.id"
  */
 function getPageId(u: URL) {
-    if (u.pathname.length < 6) {
+    if (u.pathname.length < 5) {
         return null;
     }
     if (u.pathname.substring(0,1) !== "/") {
         return null;
     } 
-    if (u.pathname.substring(u.pathname.length - 5) !== ".json") {
+    if (u.pathname.substring(u.pathname.length - 4) !== ".svg") {
         return null;
     }
-    return u.pathname.substring(1, u.pathname.length - 5);
+    return u.pathname.substring(1, u.pathname.length - 4);
 }
 
 async function increase_count(page_checksum: String) {
     // Connect to Redis
-  const redis = await connect({
-    hostname: Deno.env.get("REDIS_HOSTNAME"), 
-    port: Deno.env.get("REDIS_PORT"),
-    password: Deno.env.get("REDIS_PASSWORD")
-  });
-  let new_count = await redis.incr(page_checksum);
-  await redis.quit();
-  return new_count;
+    const kv = await Deno.openKv();
+    const keys = ["counts", page_checksum];
+    let current = await kv.get(keys);
+    if (current && current.value) {
+        let new_count = current.value + 1;
+        await kv.set(keys, new_count);
+        return new_count;
+    } else {
+        await kv.set(keys, 1);
+        return 1;
+    }
 }
