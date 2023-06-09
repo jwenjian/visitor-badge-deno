@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.155.0/http/server.ts";
 import { createHash } from "https://deno.land/std@0.155.0/hash/mod.ts";
 import "https://unpkg.com/badgen";
+const kv = await Deno.openKv();
 
 serve(async (req: Request) => {
     const u = new URL(req.url);
@@ -50,15 +51,6 @@ function getPageId(u: URL) {
 
 async function increase_count(page_checksum: String) {
     // Connect to Redis
-    const kv = await Deno.openKv();
-    const keys = ["counts", page_checksum];
-    let current = await kv.get(keys);
-    if (current && current.value) {
-        let new_count = current.value + 1;
-        await kv.set(keys, new_count);
-        return new_count;
-    } else {
-        await kv.set(keys, 1);
-        return 1;
-    }
+    await kv.atomic().sum(["views", page_checksum], 1n).commit();
+    return await kv.get(["views", page_checksum]);
 }
