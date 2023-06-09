@@ -53,6 +53,6 @@ async function increase_count(page_checksum: String) {
     // Connect to Redis
     await kv.atomic().sum(["views", page_checksum], 1n).commit();
     let r = await kv.get(["views", page_checksum]);
-    console.log(r);
-    return r;
+    console.log(r.value.value);
+    return r.value.value;
 }
