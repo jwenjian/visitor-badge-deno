@@ -52,6 +52,7 @@ function getPageId(u: URL) {
 async function increase_count(page_checksum: String) {
     // Connect to Redis
     await kv.atomic().sum(["views", page_checksum], 1n).commit();
-    console.log(kv.get(["views", page_checksum]));
-    return await kv.get(["views", page_checksum]);
+    let r = await kv.get(["views", page_checksum]);
+    console.log(r);
+    return r;
 }
