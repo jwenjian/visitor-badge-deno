@@ -7,6 +7,6 @@ A simple page view counter badge by Deno and Deno KV.
 👇👇👇
 ```
 
-![](https://visitor-badge-deno.deno.dev/jwenjian.visitor-badge-deno.json)
+![](https://visitor-badge-deno.deno.dev/jwenjian.visitor-badge-deno.svg)
 
 Have fun!
